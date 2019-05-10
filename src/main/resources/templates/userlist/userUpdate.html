@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>编辑用户</title>
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/webjars/bootstrap/4.2.1/css/bootstrap.css}" rel="stylesheet">
+    <link rel="shortcut icon" th:href="@{/static/assets/ico/favicon.png}">
+    <!-- Custom styles for this template -->
+    <link th:href="@{/static/css/dashboard.css}" rel="stylesheet">
+    <style type="text/css">
+        /* Chart.js */
+
+        @-webkit-keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        @keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        .chartjs-render-monitor {
+            -webkit-animation: chartjs-render-animation 0.001s;
+            animation: chartjs-render-animation 0.001s;
+        }
+    </style>
+</head>
+
+<body>
+<!-- 引入顶栏 -->
+<div th:replace="commons/bar::topbar"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- 引入侧边栏-->
+        <div th:replace="commons/bar::#sidebar1(activeUri='/user/update.do')"></div>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <form th:action="@{/user/update}" method="post">
+                <!--
+                1、SpringMVC中配置HiddenHttpMethodFilter;（SpringBoot自动配置好的）
+                2、页面创建一个post表单
+                3、创建一个input项，name="_method";值就是我们指定的请求方式
+                -->
+                <input type="hidden" name="action">
+                <div class="form-group">
+                    <label>username</label>
+                    <input name="username" type="text" class="form-control" th:value="${user.username}" th:required="true">
+                </div>
+                <div class="form-group">
+                    <label>password</label>
+                    <input name="password" type="password" class="form-control" th:value="${user.password}" th:required="true">
+                </div>
+                <div class="form-group">
+                    <label>email</label>
+                    <input name="email" type="email" class="form-control" th:value="${user.email}" th:required="true">
+                </div>
+                <div class="form-group">
+                    <label>phone</label>
+                    <input name="phone" type="text" class="form-control" th:value="${user.phone}" th:required="true">
+                </div>
+                <div class="form-group">
+                    <label>question</label>
+                    <input name="question" type="text" class="form-control" th:value="${user.question}" th:required="true">
+                </div>
+                <div class="form-group">
+                    <label>answer</label>
+                    <input name="answer" type="text" class="form-control" th:value="${user.answer}" th:required="true">
+                </div>
+                <div class="form-group">
+                    <label>balance</label>
+                    <input name="balance" type="text" class="form-control" th:value="${user.balance}" th:required="true">
+                </div>
+                <div class="form-group">
+                    <label>role</label><br/>
+                    <div class="form-check form-check-inline">
+                        <select class="form-control" id="role" name="role" th:required="true">
+                            <option value=""> -- 请选择 -- </option>
+                            <option th:value="0" >管理员</option>
+                            <option th:value="1">普通用户</option>
+                        </select>
+                        <input type="hidden" id="ro" th:value="${user.role}">
+                    </div>
+                </div>
+                <button type="submit"  class="btn btn-primary">确定</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="button" onclick="goBack()" class="btn btn-primary">取消</button>
+            </form>
+        </main>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<!--<script type="text/javascript" th:src="@{/static/js/}" rel="stylesheet"></script>-->
+<script type="text/javascript" th:src="@{/static/js/jq.js}"  rel="stylesheet"></script>
+<script type="text/javascript" th:src="@{/static/js/popper.min.js}" rel="stylesheet"></script>
+<script type="text/javascript" th:src="@{/static/js/bootstrap.min.js}" rel="stylesheet"></script>
+
+<!-- Icons -->
+<script type="text/javascript" th:src="@{/static/js/feather.min.js}" rel="stylesheet"></script>
+<!--<script>-->
+<!--feather.replace()-->
+<!--</script>-->
+
+<!-- Graphs -->
+<script type="text/javascript" th:src="@{/static/js/Chart.min.js}" rel="stylesheet"></script>
+<script th:inline="javascript">
+    $(function () {
+        //返回用户页面
+        goBack = function () {
+            window.location.href = '/user/list';
+        }
+        var strs = document.getElementById("ro").value;
+        var objb = document.getElementById("role");
+        for(var i=0;i<objb.length;i++){
+            if(objb[i].value==strs)
+                objb[i].selected = true;
+        }
+    });
+
+</script>
+
+</body>
+
+</html>

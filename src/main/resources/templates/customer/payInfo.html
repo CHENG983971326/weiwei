@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>订单详情</title>
+    <!-- Bootstrap core CSS -->
+    <link rel="shortcut icon" th:href="@{/static/assets/ico/favicon.png}">
+    <link th:href="@{/webjars/bootstrap/4.2.1/css/bootstrap.css}" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link th:href="@{/static/css/dashboard.css}" rel="stylesheet">
+
+    <style type="text/css">
+        /* Chart.js */
+
+        @-webkit-keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        @keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        .chartjs-render-monitor {
+            -webkit-animation: chartjs-render-animation 0.001s;
+            animation: chartjs-render-animation 0.001s;
+        }
+    </style>
+</head>
+
+<body>
+<div th:replace="commons/bar::topbar"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- 引入侧边栏-->
+        <div th:replace="commons/bar::#sidebar11(activeUri='/order/list.do')"></div>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <input type="hidden" name="action">
+            <div class="form-group">
+                <label>订单号</label>
+                <span id="orderNo" type="text" class="form-control" th:text="${order.orderNo}" ></span>
+            </div>
+            <!--<div class="form-group">-->
+            <!--<label>MainImage</label>-->
+            <!--<span id="mainimage" type="text" class="form-control" th:text="${product.mainimage}" ></span>-->
+            <!--</div>-->
+            <div class="form-group">
+                <label>总金额</label>
+                <span id="payment" type="text" class="form-control" th:text="${order.payment}" ></span>
+            </div>
+            <div class="form-group">
+                <label>支付类型</label>
+                <span  class="form-control" th:text="${order.paymentType}==1?线上:线下" ></span>
+            </div>
+            <div class="form-group">
+                <label>收货人姓名</label>
+                <input id="reciverName" name="reciverName" type="text"  th:required="true" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>收货人手机号</label>
+                <input id="reciverPhone" name="reciverPhone" type="text"  th:required="true" class="form-control">
+            </div>
+            <div class="form-group">
+                <label>收货人地址</label>
+                <input id="reciverAddress" name="reciverAddress" type="text"  th:required="true" class="form-control">
+            </div>
+            <button type="submit"  class="btn btn-primary" onclick="payA()">支付</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <button type="button" onclick="goBackto()" class="btn btn-primary">取消</button>
+
+
+
+            <!--</form>-->
+        </main>
+    </div>
+</div>
+
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<!--<script type="text/javascript" th:src="@{/static/js/}" rel="stylesheet"></script>-->
+<script type="text/javascript" th:src="@{/static/js/jq.js}"  rel="stylesheet"></script>
+<script type="text/javascript" th:src="@{/static/js/popper.min.js}" rel="stylesheet"></script>
+<script type="text/javascript" th:src="@{/static/js/bootstrap.min.js}" rel="stylesheet"></script>
+<script type="text/javascript" th:src="@{/static/js/layer.js}" rel="stylesheet"></script>
+
+<!-- Icons -->
+<script type="text/javascript" th:src="@{/static/js/feather.min.js}" rel="stylesheet"></script>
+<!--<script>-->
+<!--feather.replace()-->
+<!--</script>-->
+
+<!-- Graphs -->
+<script type="text/javascript" th:src="@{/static/js/Chart.min.js}" rel="stylesheet"></script>
+<script th:inline="javascript">
+    $(function () {
+        //返回商品页面
+        payA=function() {
+            var id = document.getElementById('orderNo').innerText;
+            var reciverName = $("#reciverName").val();
+            var reciverPhone = $("#reciverPhone").val();
+            var reciverAddress = $("#reciverAddress").val();
+            if(reciverName==null||reciverName==""||reciverPhone==null||reciverPhone==""||reciverAddress==null||reciverAddress=="")
+            {
+                alert("参数不为空");
+                return;
+            }
+            var a = confirm("确认支付该订单");
+            if (a === true) {
+                $.ajax({
+                    type: 'post',//提交方式 post 或者get
+                    url: '/order/payFor',//提交到那里后他的服务
+                    data: {
+                        orderId: id,
+                        reciverName: reciverName,
+                        reciverPhone: reciverPhone,
+                        reciverAddress: reciverAddress
+                    },
+                    success: function (data) {
+                        if (data.code == 200) {
+                            window.location.href = '/order/list.do';
+                            alert("支付成功");
+                        } if (data.code==0){
+                            alert("余额不足,请充值");
+                        }
+                    }, error: function (data) {
+                        alert(data)
+                    }
+                });
+            }
+        };
+
+        goBackto = function () {
+            window.location.href = '/order/list.do';
+        }
+    });
+
+</script>
+
+</body>
+
+</html>

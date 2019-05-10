@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>添加商品</title>
+    <!-- Bootstrap core CSS -->
+    <link rel="shortcut icon" th:href="@{/static/assets/ico/favicon.png}">
+    <link th:href="@{/webjars/bootstrap/4.2.1/css/bootstrap.css}" rel="stylesheet">
+    <!-- Custom styles for this template -->
+    <link th:href="@{/static/css/dashboard.css}" rel="stylesheet">
+    <style type="text/css">
+        /* Chart.js */
+
+        @-webkit-keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        @keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        .chartjs-render-monitor {
+            -webkit-animation: chartjs-render-animation 0.001s;
+            animation: chartjs-render-animation 0.001s;
+        }
+
+         label{
+             position: relative;
+         }
+        #fileinp{
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+        }
+    </style>
+</head>
+
+<body>
+<!-- 引入顶栏 -->
+<div th:replace="commons/bar::topbar"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- 引入侧边栏-->
+        <div th:replace="commons/bar::#sidebar2(activeUri='/manager/product/add.do')"></div>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <form  method="post"id="disk" enctype="multipart/form-data">
+                <!--
+                1、SpringMVC中配置HiddenHttpMethodFilter;（SpringBoot自动配置好的）
+                2、页面创建一个post表单
+                3、创建一个input项，name="_method";值就是我们指定的请求方式
+                -->
+                <input type="hidden" name="action">
+                <div class="form-group">
+                    <label>CategoryId</label>
+                    <!--提交的是商品的id-->
+                    <select class="form-control" id="categoryId" name="categoryId" th:required="true">
+                        <option value=""> -- 请选择 -- </option>
+                        <option th:value="0">根节点</option>
+                        <option th:value="1" >电脑数码</option>
+                        <option th:value="2">运动户外</option>
+                        <option th:value="3">母婴用品</option>
+                        <option th:value="4">食品生鲜</option>
+                        <option th:value="5">图书音像</option>
+                        <option th:value="6">家具家装</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Name</label>
+                    <input name="name" type="text" class="form-control" th:required="true">
+                </div>
+                <div class="form-group">
+                        <label for="fileinp">
+                            <span id="do" class="form-control">请选择图片上传</span>
+                            <input type="file" id="fileinp" name="fileinp" class="form-control" accept="image/*">
+                        </label>
+                        <!--<input type="file"  id="inputData" class="form-control" accept=".xls"  th:placeholder="请选择文件上传" th:required="true" >-->
+                    </div>
+
+                <div class="form-group">
+                    <label>Subtitle</label>
+                    <input name="subtitle" type="text" class="form-control"  th:required="true">
+                </div>
+                <div class="form-group">
+                    <label>Detail</label>
+                    <input name="detail" type="text" class="form-control"  th:required="true">
+                </div>
+                <div class="form-group">
+                    <label>Price</label>
+                    <input name="price" type="text" class="form-control"  th:required="true">
+                </div>
+                <div class="form-group">
+                    <label>Stock</label>
+                    <input name="stock" type="text" class="form-control" th:required="true">
+                </div>
+                <div class="form-group">
+                    <label>Status</label><br/>
+                    <div class="form-check form-check-inline">
+                        <select class="form-control" id="status" name="status" th:required="true">
+                            <option value=""> -- 请选择 -- </option>
+                            <option th:value="1" >上架</option>
+                            <option th:value="2">下架</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="button" onclick="save1()" class="btn btn-primary">添加</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="button" onclick="goBackto()" class="btn btn-primary">取消</button>
+            </form>
+        </main>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<!--<script type="text/javascript" th:src="@{/static/js/}" rel="stylesheet"></script>-->
+<script type="text/javascript" th:src="@{/static/js/jq.js}"  rel="stylesheet"></script>
+<script type="text/javascript" th:src="@{/static/js/popper.min.js}" rel="stylesheet"></script>
+<script type="text/javascript" th:src="@{/static/js/bootstrap.min.js}" rel="stylesheet"></script>
+
+<!-- Icons -->
+<script type="text/javascript" th:src="@{/static/js/feather.min.js}" rel="stylesheet"></script>
+<!--<script>-->
+<!--feather.replace()-->
+<!--</script>-->
+
+<!-- Graphs -->
+<script type="text/javascript" th:src="@{/static/js/Chart.min.js}" rel="stylesheet"></script>
+<script th:inline="javascript">
+    $("#fileinp").change(function () {
+        $("#do").html($("#fileinp").val());
+    });
+    $(function () {
+        //返回用户页面
+        goBackto = function () {
+            window.location.href = '/manage/product/list.do';
+        }
+
+         save1=function(){
+             var a=confirm("确定添加该商品吗");
+             if (a===true) {
+            //  var distribute = $('#distribute').serialize();
+            var formdata=new FormData($('#disk')[0]);
+            $.ajax({
+                cache : true,
+                type : "POST",
+                url : '/manage/product/add',
+                data : formdata, // 你的formid
+                async : false,
+                // 告诉jQuery不要去处理发送的数据
+                processData : false,
+                // 告诉jQuery不要去设置Content-Type请求头
+                contentType : false,
+                error : function(request) {
+                    alert("Connection error");
+                },
+                success : function(data) {
+                    if (data.code == 200) {
+                        alert("添加成功");
+                        window.location.href="/manage/product/list.do";
+
+                    } else if (data.code == 10) {
+                        alert(data.msg);
+                        window.location.href="/manage/product/list.do";
+
+                    }else {
+                        alert(data.msg);
+                        window.location.href="/manage/product/list.do";
+                    }
+                }
+            });
+        };
+    }});
+
+
+</script>
+
+</body>
+
+</html>

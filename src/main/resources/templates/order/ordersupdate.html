@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>订单更改</title>
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/webjars/bootstrap/4.2.1/css/bootstrap.css}" rel="stylesheet">
+    <link rel="shortcut icon" th:href="@{/static/assets/ico/favicon.png}">
+    <!-- Custom styles for this template -->
+    <link th:href="@{/static/css/dashboard.css}" rel="stylesheet">
+    <style type="text/css">
+        /* Chart.js */
+
+        @-webkit-keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        @keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        .chartjs-render-monitor {
+            -webkit-animation: chartjs-render-animation 0.001s;
+            animation: chartjs-render-animation 0.001s;
+        }
+    </style>
+</head>
+
+<body>
+<!-- 引入顶栏 -->
+<div th:replace="commons/bar::topbar"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- 引入侧边栏-->
+        <div th:replace="commons/bar::#sidebar4(activeUri='/manage/orderstatus/update.do')"></div>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <form th:action="@{/manage/orderstatus/update}" method="post">
+                <input type="hidden" name="action">
+                <p style="color:#de995e ; " th:text="${msg}" th:if="${not #strings.isEmpty(msg)}"></p>
+                <div class="form-group">
+                    <label>OrderId</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <!--<input name="id" type="text" class="form-control">-->
+                    <div class="form-check form-check-inline">
+                        <select class="form-control" id="orderNo" name="orderNo" th:required="true">
+                            <option value=""> -- 请选择 -- </option>
+                            <option   th:each="c:${lists}"  th:value="${c.orderNo}" th:text="${c.orderNo}" ></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>UserId</label>
+                    <!--<input name="id" type="text" class="form-control">-->
+                    <input id="userId" name="userId" type="text" readonly="readonly"  class="form-control">
+                </div>
+
+                <div class="form-group">
+                    <label>Status</label><br/>
+                    <div class="form-check form-check-inline">
+                        <select class="form-control" id="status" name="status" th:required="true">
+                            <option value=""> -- 请选择 -- </option>
+                            <option th:value="0" >已取消</option>
+                            <option th:value="10">未付款</option>
+                            <option th:value="20">已付款</option>
+                            <option th:value="40">已发货</option>
+                            <option th:value="50">交易成功</option>
+                            <option th:value="60">交易关闭</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit"  class="btn btn-primary" >确定</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="button" onclick="goBackto()" class="btn btn-primary">取消</button>
+            </form>
+        </main>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<!--<script type="text/javascript" th:src="@{/static/js/}" rel="stylesheet"></script>-->
+<script type="text/javascript" th:src="@{/static/js/jq.js}"  rel="stylesheet"></script>
+<script type="text/javascript" th:src="@{/static/js/popper.min.js}" rel="stylesheet"></script>
+<script type="text/javascript" th:src="@{/static/js/bootstrap.min.js}" rel="stylesheet"></script>
+
+<!-- Icons -->
+<script type="text/javascript" th:src="@{/static/js/feather.min.js}" rel="stylesheet"></script>
+<!--<script>-->
+<!--feather.replace()-->
+<!--</script>-->
+
+<!-- Graphs -->
+<script type="text/javascript" th:src="@{/static/js/Chart.min.js}" rel="stylesheet"></script>
+<script th:inline="javascript">
+    $("#orderNo").change(function () {
+        $.ajax({
+            type:"get",
+            url:'/manage/ordersupdate/getName',
+            data:{
+                orderNo:$("#orderNo option:selected").text()
+            },
+            dataType:'json',
+            success:function (data) {
+                if (data.code==0){
+                    if (data.data==null) {
+                        $("#userId").attr("value","");
+                        console.log("失败");
+                    }
+
+                }else {
+                    console.log("成功");
+                    $("#userId").attr("value",data.data);
+                }
+            }
+        })
+    });
+
+    $(function () {
+        //返回用户页面
+        goBackto = function () {
+            window.location.href = '/manage/order/list';
+        }
+    });
+
+</script>
+
+</body>
+
+</html>

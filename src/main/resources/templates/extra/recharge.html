@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)http://getbootstrap.com/docs/4.0/examples/dashboard/ -->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>账户充值</title>
+    <!-- Bootstrap core CSS -->
+    <link th:href="@{/webjars/bootstrap/4.2.1/css/bootstrap.css}" rel="stylesheet">
+    <link rel="shortcut icon" th:href="@{/static/assets/ico/favicon.png}">
+    <!-- Custom styles for this template -->
+    <link th:href="@{/static/css/dashboard.css}" rel="stylesheet">
+    <style type="text/css">
+        /* Chart.js */
+
+        @-webkit-keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        @keyframes chartjs-render-animation {
+            from {
+                opacity: 0.99
+            }
+            to {
+                opacity: 1
+            }
+        }
+
+        .chartjs-render-monitor {
+            -webkit-animation: chartjs-render-animation 0.001s;
+            animation: chartjs-render-animation 0.001s;
+        }
+    </style>
+</head>
+
+<body>
+<!-- 引入顶栏 -->
+<div th:replace="commons/bar::topbar"></div>
+
+<div class="container-fluid">
+    <div class="row">
+        <!-- 引入侧边栏-->
+        <div th:replace="commons/bar::#sidebar7(activeUri='/user/recharge.do')"></div>
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+            <form   id="formUp" method="post">
+                <input type="hidden" name="action">
+                <p style="color:#de995e ; " th:text="${msg}" th:if="${not #strings.isEmpty(msg)}"></p>
+                <div class="form-group">
+                    <label>UserId</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <!--<input name="id" type="text" class="form-control">-->
+                    <div class="form-check form-check-inline">
+                        <select class="form-control" id="userId" name="userId" th:required="true">
+                            <option value=""> -- 请选择 -- </option>
+                            <option   th:each="c:${lists}"  th:value="${c.id}" th:text="${c.id}" ></option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>UserName</label>
+                    <!--<input name="id" type="text" class="form-control">-->
+                    <input id="username" name="username"  type="text" readonly="readonly"  class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Balance</label>
+                    <input name="balance" type="text"  id="balance" th:required="true" class="form-control">
+                </div>
+                <button type="submit"  class="btn btn-primary" onclick="reCharge()">充值</button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <button type="button" onclick="goBackto()" class="btn btn-primary">取消</button>
+            </form>
+        </main>
+    </div>
+</div>
+
+<!-- Bootstrap core JavaScript
+================================================== -->
+<!-- Placed at the end of the document so the pages load faster -->
+<!--<script type="text/javascript" th:src="@{/static/js/}" rel="stylesheet"></script>-->
+<script type="text/javascript" th:src="@{/static/js/jq.js}"  rel="stylesheet"></script>
+<script type="text/javascript" th:src="@{/static/js/popper.min.js}" rel="stylesheet"></script>
+<script type="text/javascript" th:src="@{/static/js/bootstrap.min.js}" rel="stylesheet"></script>
+
+<!-- Icons -->
+<script type="text/javascript" th:src="@{/static/js/feather.min.js}" rel="stylesheet"></script>
+<!--<script>-->
+<!--feather.replace()-->
+<!--</script>-->
+
+<!-- Graphs -->
+<script type="text/javascript" th:src="@{/static/js/Chart.min.js}" rel="stylesheet"></script>
+<script th:inline="javascript">
+    $("#userId").change(function () {
+        $.ajax({
+            type:"get",
+            url:'/user/recharge/getName',
+            data:{
+                id:$("#userId option:selected").text()
+            },
+            dataType:'json',
+            success:function (data) {
+                if (data.code==0){
+                    if (data.data==null) {
+                        $("#username").attr("value","");
+                        console.log("失败");
+                    }
+                }else {
+                    console.log("成功");
+                    $("#username").attr("value",data.data);
+                }
+            }
+        })
+    });
+
+    $(function () {
+        //返回用户页面
+        goBackto = function () {
+            window.location.href = '/user/list';
+        }
+
+        reCharge=function () {
+            var  formdata=new FormData($ ("#formUp")[0]);
+            $.ajax({
+                url:'/user/recharge',
+                type:'post',
+                data:formdata,
+                dataType:'json',
+                async : false,
+                // 告诉jQuery不要去处理发送的数据
+                processData : false,
+                // 告诉jQuery不要去设置Content-Type请求头
+                contentType : false,
+                cache : false,
+                success:function (r) {
+                    if (r.code==200) {
+                        alert("充值成功");
+                        window.location.href='/user/recharge.do';
+                    }
+                    else  {
+                        alert("充值失败");
+                        window.location.href='/user/recharge.do';
+                    }
+                }
+            })
+        }
+
+    });
+
+</script>
+
+</body>
+
+</html>
